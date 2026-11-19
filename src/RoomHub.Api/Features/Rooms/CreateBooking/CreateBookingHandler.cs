@@ -9,7 +9,8 @@ namespace RoomHub.Api.Features.Rooms.CreateBooking;
 public sealed class CreateBookingHandler(
     IRoomRepository rooms,
     IBookingRepository bookings,
-    IUnitOfWork unitOfWork) : ICommandHandler<CreateBookingCommand, BookingCreatedResponse>
+    IUnitOfWork unitOfWork,
+    TimeProvider timeProvider) : ICommandHandler<CreateBookingCommand, BookingCreatedResponse>
 {
     public async Task<Result<BookingCreatedResponse>> Handle(CreateBookingCommand command, CancellationToken cancellationToken)
     {
@@ -23,7 +24,8 @@ public sealed class CreateBookingHandler(
             command.StartUtc,
             command.EndUtc,
             command.Attendees,
-            room);
+            room,
+            timeProvider.GetUtcNow().UtcDateTime);
         if (result.IsFailure)
             return result.Error;
 

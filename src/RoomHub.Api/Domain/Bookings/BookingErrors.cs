@@ -8,6 +8,10 @@ public static class BookingErrors
         Error.Validation("InvalidBookedBy", "BookedBy is required.");
     public static readonly Error InvalidRange =
         Error.Validation("InvalidRange", "The end must be after the start.");
+    public static readonly Error StartInPast =
+        Error.Validation("StartInPast", "The booking cannot start in the past.");
+    public static readonly Error MaximumDurationExceeded =
+        Error.Validation("MaximumDurationExceeded", "A booking cannot exceed 4 hours.");
     public static readonly Error InvalidAttendees =
         Error.Validation("InvalidAttendees", "Attendees must be positive.");
     public static readonly Error AttendeesExceedCapacity =

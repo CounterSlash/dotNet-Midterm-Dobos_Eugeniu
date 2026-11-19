@@ -40,13 +40,20 @@ public sealed class Booking
         DateTime startUtc,
         DateTime endUtc,
         int attendees,
-        Room room)
+        Room room,
+        DateTime nowUtc)
     {
         if (string.IsNullOrWhiteSpace(bookedBy))
             return BookingErrors.InvalidBookedBy;
 
         if (endUtc <= startUtc)
             return BookingErrors.InvalidRange;
+
+        if (startUtc < nowUtc)
+            return BookingErrors.StartInPast;
+
+        if (endUtc - startUtc > TimeSpan.FromHours(4))
+            return BookingErrors.MaximumDurationExceeded;
 
         if (attendees <= 0)
             return BookingErrors.InvalidAttendees;

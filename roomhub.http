@@ -117,3 +117,38 @@ Content-Type: application/json
   "endUtc": "2030-01-10T12:00:00Z",
   "attendees": 4
 }
+
+### R10. Create a room with capacity greater than 10
+# @name createLargeRoom
+POST {{baseUrl}}/api/rooms
+Content-Type: application/json
+
+{
+  "name": "Large study room",
+  "capacity": 11
+}
+
+###
+@largeRoomId = {{createLargeRoom.response.body.$.id}}
+
+### R10. Exactly 2 hours for a capacity 11 room (expected: 201)
+POST {{baseUrl}}/api/rooms/{{largeRoomId}}/bookings
+Content-Type: application/json
+
+{
+  "bookedBy": "large-room-exact",
+  "startUtc": "2030-01-12T10:00:00Z",
+  "endUtc": "2030-01-12T12:00:00Z",
+  "attendees": 11
+}
+
+### R10. Longer than 2 hours for a capacity 11 room (expected: 400)
+POST {{baseUrl}}/api/rooms/{{largeRoomId}}/bookings
+Content-Type: application/json
+
+{
+  "bookedBy": "large-room-long",
+  "startUtc": "2030-01-13T10:00:00Z",
+  "endUtc": "2030-01-13T12:00:00.001Z",
+  "attendees": 11
+}

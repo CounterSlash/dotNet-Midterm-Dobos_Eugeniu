@@ -52,8 +52,15 @@ public sealed class Booking
         if (startUtc < nowUtc)
             return BookingErrors.StartInPast;
 
-        if (endUtc - startUtc > TimeSpan.FromHours(4))
-            return BookingErrors.MaximumDurationExceeded;
+        var duration = endUtc - startUtc;
+        var maximumDuration = room.Capacity > 10
+            ? TimeSpan.FromHours(2)
+            : TimeSpan.FromHours(4);
+
+        if (duration > maximumDuration)
+            return room.Capacity > 10
+                ? BookingErrors.LargeRoomMaximumDurationExceeded
+                : BookingErrors.MaximumDurationExceeded;
 
         if (attendees <= 0)
             return BookingErrors.InvalidAttendees;

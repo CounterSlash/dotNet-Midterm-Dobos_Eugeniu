@@ -1,0 +1,13 @@
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+namespace RoomHub.Api.Infrastructure.Persistence;
+
+public sealed class UtcDateTimeConverter : ValueConverter<DateTime, DateTime>
+{
+    public UtcDateTimeConverter()
+        : base(
+            value => value,
+            value => DateTime.SpecifyKind(value, DateTimeKind.Utc))
+    {
+    }
+}

@@ -1,10 +1,8 @@
 using RoomHub.Api.Common;
-using RoomHub.Api.Domain.Bookings;
+using RoomHub.Api.Common.Cqrs;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace RoomHub.Api.Features.Bookings.GetBookingById;
-
-public sealed record BookingCreatedResponse(Guid Id, Guid RoomId, string Status);
 
 public sealed record BookingResponse(
     Guid Id,
@@ -22,20 +20,12 @@ public static class GetBookingByIdEndpoint
 
     private static async Task<Results<Ok<BookingResponse>, ProblemHttpResult>> Handle(
         Guid id,
-        IBookingRepository bookings,
+        IQueryHandler<GetBookingByIdQuery, BookingResponse> handler,
         CancellationToken ct)
     {
-        var booking = await bookings.GetByIdAsync(id, ct);
-        if (booking is null)
-            return BookingErrors.NotFound.ToProblem();
-
-        return TypedResults.Ok(new BookingResponse(
-            booking.Id,
-            booking.RoomId,
-            booking.BookedBy,
-            booking.StartUtc,
-            booking.EndUtc,
-            booking.Attendees,
-            booking.Status.ToString()));
+        var result = await handler.Handle(new GetBookingByIdQuery(id), ct);
+        return result.IsFailure
+            ? result.Error.ToProblem()
+            : TypedResults.Ok(result.Value);
     }
 }

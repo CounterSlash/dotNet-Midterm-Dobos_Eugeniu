@@ -6,7 +6,11 @@ public static class HandlerRegistrationExtensions
 {
     public static IServiceCollection AddHandlers(this IServiceCollection services, Assembly assembly)
     {
-        var handlerInterface = typeof(ICommandHandler<,>);
+        var handlerInterfaces = new[]
+        {
+            typeof(ICommandHandler<,>),
+            typeof(IQueryHandler<,>)
+        };
 
         foreach (var type in assembly.GetTypes())
         {
@@ -16,7 +20,7 @@ public static class HandlerRegistrationExtensions
             foreach (var implementedInterface in type.GetInterfaces())
             {
                 if (implementedInterface.IsGenericType &&
-                    implementedInterface.GetGenericTypeDefinition() == handlerInterface)
+                    handlerInterfaces.Contains(implementedInterface.GetGenericTypeDefinition()))
                 {
                     services.AddScoped(implementedInterface, type);
                 }

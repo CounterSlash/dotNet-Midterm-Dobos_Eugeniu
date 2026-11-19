@@ -5,16 +5,16 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace RoomHub.Api.Features.Rooms.CreateRoom;
 
 public sealed record CreateRoomRequest(string? Name, int Capacity);
-public sealed record RoomResponse(Guid Id, string Name, int Capacity);
+public sealed record CreatedRoomResponse(Guid Id, string Name, int Capacity);
 
 public static class CreateRoomEndpoint
 {
     public static void Map(RouteGroupBuilder group) =>
         group.MapPost("/", Handle).WithName("CreateRoom");
 
-    private static async Task<Results<Created<RoomResponse>, ProblemHttpResult>> Handle(
+    private static async Task<Results<Created<CreatedRoomResponse>, ProblemHttpResult>> Handle(
         CreateRoomRequest request,
-        ICommandHandler<CreateRoomCommand, RoomResponse> handler,
+        ICommandHandler<CreateRoomCommand, CreatedRoomResponse> handler,
         CancellationToken ct)
     {
         var result = await handler.Handle(new CreateRoomCommand(request.Name, request.Capacity), ct);

@@ -2,7 +2,6 @@ using RoomHub.Api.Common.Cqrs;
 using RoomHub.Api.Domain.Bookings;
 using RoomHub.Api.Domain.Common;
 using RoomHub.Api.Domain.Rooms;
-using RoomHub.Api.Features.Bookings.GetBookingById;
 
 namespace RoomHub.Api.Features.Rooms.CreateBooking;
 
@@ -10,9 +9,9 @@ public sealed class CreateBookingHandler(
     IRoomRepository rooms,
     IBookingRepository bookings,
     IUnitOfWork unitOfWork,
-    TimeProvider timeProvider) : ICommandHandler<CreateBookingCommand, BookingCreatedResponse>
+    TimeProvider timeProvider) : ICommandHandler<CreateBookingCommand, CreatedBookingResponse>
 {
-    public async Task<Result<BookingCreatedResponse>> Handle(CreateBookingCommand command, CancellationToken cancellationToken)
+    public async Task<Result<CreatedBookingResponse>> Handle(CreateBookingCommand command, CancellationToken cancellationToken)
     {
         var room = await rooms.GetByIdAsync(command.RoomId, cancellationToken);
         if (room is null)
@@ -43,6 +42,6 @@ public sealed class CreateBookingHandler(
         bookings.Add(result.Value);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         var createdBooking = result.Value;
-        return new BookingCreatedResponse(createdBooking.Id, createdBooking.RoomId, createdBooking.Status.ToString());
+        return new CreatedBookingResponse(createdBooking.Id, createdBooking.RoomId, createdBooking.Status.ToString());
     }
 }

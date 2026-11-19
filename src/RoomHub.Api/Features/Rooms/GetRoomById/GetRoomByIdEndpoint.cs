@@ -1,6 +1,5 @@
 using RoomHub.Api.Common;
-using RoomHub.Api.Domain.Rooms;
-using RoomHub.Api.Features.Rooms.CreateRoom;
+using RoomHub.Api.Common.Cqrs;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace RoomHub.Api.Features.Rooms.GetRoomById;
@@ -12,13 +11,12 @@ public static class GetRoomByIdEndpoint
 
     private static async Task<Results<Ok<RoomResponse>, ProblemHttpResult>> Handle(
         Guid id,
-        IRoomRepository rooms,
+        IQueryHandler<GetRoomByIdQuery, RoomResponse> handler,
         CancellationToken ct)
     {
-        var room = await rooms.GetByIdAsync(id, ct);
-        if (room is null)
-            return RoomErrors.NotFound.ToProblem();
-
-        return TypedResults.Ok(new RoomResponse(room.Id, room.Name, room.Capacity));
+        var result = await handler.Handle(new GetRoomByIdQuery(id), ct);
+        return result.IsFailure
+            ? result.Error.ToProblem()
+            : TypedResults.Ok(result.Value);
     }
 }

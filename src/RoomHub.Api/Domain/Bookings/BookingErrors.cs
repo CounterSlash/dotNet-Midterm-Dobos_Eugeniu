@@ -33,4 +33,8 @@ public static class BookingErrors
 
     public static readonly Error AlreadyCancelled =
         Error.Conflict("BookingAlreadyCancelled", "The booking is already cancelled.");
+
+    public static readonly Error CancellationDeadlineExceeded =
+        Error.Conflict("CancellationDeadlineExceeded",
+            "A booking can only be cancelled at least 60 minutes before it starts.");
 }

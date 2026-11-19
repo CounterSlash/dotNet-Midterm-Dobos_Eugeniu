@@ -71,10 +71,13 @@ public sealed class Booking
         return new Booking(Guid.NewGuid(), roomId, bookedBy.Trim(), startUtc, endUtc, attendees);
     }
 
-    public Result<Unit> Cancel()
+    public Result<Unit> Cancel(DateTime nowUtc)
     {
         if (Status == BookingStatus.Cancelled)
             return BookingErrors.AlreadyCancelled;
+
+        if (StartUtc - nowUtc < TimeSpan.FromMinutes(60))
+            return BookingErrors.CancellationDeadlineExceeded;
 
         Status = BookingStatus.Cancelled;
         return Unit.Value;

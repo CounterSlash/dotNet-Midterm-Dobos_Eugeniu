@@ -152,3 +152,21 @@ Content-Type: application/json
   "endUtc": "2030-01-13T12:00:00.001Z",
   "attendees": 11
 }
+
+### R11. Create a booking starting less than 60 minutes from now
+# @name createNearBooking
+POST {{baseUrl}}/api/rooms/{{roomId}}/bookings
+Content-Type: application/json
+
+{
+  "bookedBy": "near-now",
+  "startUtc": "2026-11-19T10:30:00Z",
+  "endUtc": "2026-11-19T11:30:00Z",
+  "attendees": 4
+}
+
+###
+@nearBookingId = {{createNearBooking.response.body.$.id}}
+
+### R11. Cancellation less than 60 minutes before start (expected: 409)
+POST {{baseUrl}}/api/bookings/{{nearBookingId}}/cancel
